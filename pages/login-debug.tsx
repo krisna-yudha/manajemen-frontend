@@ -52,8 +52,8 @@ export default function LoginDebug() {
   const testStep3_CheckStorage = () => {
     setStep(3);
     const storageData = {
-      token: localStorage.getItem('auth_token'),
-      user: localStorage.getItem('user'),
+      token: typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null,
+      user: typeof window !== 'undefined' ? localStorage.getItem('user') : null,
     };
     addResult('Step 3: Storage Check', storageData);
     setStep(4);
@@ -134,7 +134,9 @@ export default function LoginDebug() {
                 
                 <button
                   onClick={() => {
-                    localStorage.clear();
+                    if (typeof window !== 'undefined') {
+                      localStorage.clear();
+                    }
                     setResults([]);
                     addResult('Storage cleared', null);
                   }}

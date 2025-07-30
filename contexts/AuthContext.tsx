@@ -26,8 +26,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('AuthContext useEffect - client side, checking storage...');
     
     // Check if user is logged in on app start
-    const token = localStorage.getItem('auth_token');
-    const savedUser = localStorage.getItem('user');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const savedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
     
     console.log('Storage check:', { 
       token: token ? '[FOUND]' : '[NOT FOUND]', 
@@ -42,8 +42,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('User set in context, isAuthenticated will be:', !!parsedUser);
       } catch (error) {
         console.error('Error parsing saved user:', error);
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user');
+        }
       }
     } else {
       console.log('No valid auth data found, user remains null');

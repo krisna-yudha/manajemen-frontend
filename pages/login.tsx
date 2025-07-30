@@ -60,82 +60,146 @@ export default function Login() {
 
   return (
     <Layout>
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Sign in to your account
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full">
+          {/* Logo and Header */}
+          <div className="text-center mb-8">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+              <span className="text-white font-bold text-2xl">M</span>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900">
+              Selamat Datang
             </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Masuk ke akun Anda untuk melanjutkan
+            </p>
           </div>
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="rounded-md shadow-sm -space-y-px">
-              <div>
-                <label htmlFor="email" className="sr-only">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
 
-            <div>
-              <button
-                type="submit"
-                disabled={loginMutation.isPending}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-              >
-                {loginMutation.isPending ? 'Signing in...' : 'Sign in'}
-              </button>
-              
-              {/* Debug button */}
-              <button
-                type="button"
-                onClick={() => {
-                  console.log('=== AUTH DEBUG INFO ===');
-                  console.log('Current auth state:', { 
-                    isAuthenticated,
-                    user: user ? user.name : null 
-                  });
-                  console.log('localStorage auth_token:', localStorage.getItem('auth_token'));
-                  console.log('localStorage user:', localStorage.getItem('user'));
-                }}
-                className="mt-2 w-full py-1 px-2 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-              >
-                🔍 Debug Auth State
-              </button>
-            </div>
+          {/* Login Form */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-400 text-sm">📧</span>
+                    </div>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 sm:text-sm"
+                      placeholder="Masukkan email Anda"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                </div>
 
-            <div className="text-center">
-              <Link href="/register" className="text-indigo-600 hover:text-indigo-500">
-                Don't have an account? Sign up
-              </Link>
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-400 text-sm">🔒</span>
+                    </div>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 sm:text-sm"
+                      placeholder="Masukkan password Anda"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <button
+                  type="submit"
+                  disabled={loginMutation.isPending}
+                  className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  {loginMutation.isPending ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Masuk...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <span>🚀</span>
+                      <span>Masuk</span>
+                    </div>
+                  )}
+                </button>
+                
+                  {process.env.NODE_ENV === 'development' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        console.log('=== AUTH DEBUG INFO ===');
+                        console.log('Current auth state:', { 
+                          isAuthenticated,
+                          user: user ? user.name : null 
+                        });
+                        if (typeof window !== 'undefined') {
+                          console.log('localStorage auth_token:', localStorage.getItem('auth_token'));
+                          console.log('localStorage user:', localStorage.getItem('user'));
+                        }
+                      }}
+                      className="w-full py-2 px-3 text-xs bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors duration-200 border border-gray-200"
+                    >
+                      🔍 Debug Auth State
+                    </button>
+                  )}
+              </div>
+            </form>
+
+            {/* Register Link */}
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Belum punya akun?{' '}
+                <Link 
+                  href="/register" 
+                  className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors duration-200"
+                >
+                  Daftar sekarang
+                </Link>
+              </p>
             </div>
-          </form>
+          </div>
+
+          {/* Features */}
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <div className="flex flex-col items-center p-4 bg-white/50 rounded-xl backdrop-blur-sm">
+              <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mb-2">
+                <span className="text-indigo-600 text-sm">🏢</span>
+              </div>
+              <span className="text-xs font-medium text-gray-700">Manajemen Rental</span>
+            </div>
+            <div className="flex flex-col items-center p-4 bg-white/50 rounded-xl backdrop-blur-sm">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                <span className="text-green-600 text-sm">📱</span>
+              </div>
+              <span className="text-xs font-medium text-gray-700">Akses Mudah</span>
+            </div>
+            <div className="flex flex-col items-center p-4 bg-white/50 rounded-xl backdrop-blur-sm">
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mb-2">
+                <span className="text-purple-600 text-sm">🔒</span>
+              </div>
+              <span className="text-xs font-medium text-gray-700">Aman & Terpercaya</span>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>

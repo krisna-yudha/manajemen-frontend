@@ -22,7 +22,7 @@ api.interceptors.request.use(
     console.log(`Making ${config.method?.toUpperCase()} request to: ${config.baseURL}${config.url}`);
     console.log('Request data:', config.data);
     
-    const token = localStorage.getItem('auth_token');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       console.log('Token added to request');
@@ -52,9 +52,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Token expired atau invalid
       console.log('Unauthorized - clearing storage and redirecting');
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
       if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user');
         window.location.href = '/login';
       }
     }

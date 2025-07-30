@@ -13,6 +13,26 @@ import {
   type ApiResponse 
 } from '@/services/api';
 
+// Utility function for safe localStorage access
+const getStorageItem = (key: string): string | null => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem(key);
+  }
+  return null;
+};
+
+const setStorageItem = (key: string, value: string): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(key, value);
+  }
+};
+
+const removeStorageItem = (key: string): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(key);
+  }
+};
+
 // Auth Hooks
 export const useLogin = () => {
   return useMutation({
@@ -22,15 +42,19 @@ export const useLogin = () => {
       
       if (data.status === 'success' && data.token) {
         console.log('Storing token and user data...');
-        localStorage.setItem('auth_token', data.token);
         
-        // Check if user data is in data.user or directly in data
-        const userData = data.user || data.data?.user;
-        if (userData) {
-          localStorage.setItem('user', JSON.stringify(userData));
-          console.log('User data stored:', userData);
-        } else {
-          console.error('No user data found in response:', data);
+        // Only access localStorage on client side
+        if (typeof window !== 'undefined') {
+          setStorageItem('auth_token', data.token);
+          
+          // Check if user data is in data.user or directly in data
+          const userData = data.user || data.data?.user;
+          if (userData) {
+            setStorageItem('user', JSON.stringify(userData));
+            console.log('User data stored:', userData);
+          } else {
+            console.error('No user data found in response:', data);
+          }
         }
       } else {
         console.error('Login success callback - invalid data:', data);
@@ -47,8 +71,11 @@ export const useRegister = () => {
     mutationFn: authService.register,
     onSuccess: (data) => {
       if (data.status === 'success' && data.token) {
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        // Only access localStorage on client side
+        if (typeof window !== 'undefined') {
+          setStorageItem('auth_token', data.token);
+          setStorageItem('user', JSON.stringify(data.user));
+        }
       }
     },
   });
@@ -60,8 +87,11 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: authService.logout,
     onSuccess: () => {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
+      // Only access localStorage on client side
+      if (typeof window !== 'undefined') {
+        removeStorageItem('auth_token');
+        removeStorageItem('user');
+      }
       queryClient.clear();
     },
   });
@@ -71,7 +101,7 @@ export const useProfile = () => {
   return useQuery({
     queryKey: ['profile'],
     queryFn: authService.getProfile,
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!getStorageItem('auth_token'),
   });
 };
 
@@ -161,7 +191,7 @@ export const useMyRentals = (filters?: any) => {
   return useQuery<ApiResponse<Rental[]>>({
     queryKey: ['my-rentals', filters],
     queryFn: () => rentalService.getMine(filters),
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!getStorageItem('auth_token'),
   });
 };
 
@@ -169,7 +199,7 @@ export const usePendingRentals = () => {
   return useQuery<ApiResponse<Rental[]>>({
     queryKey: ['rentals-pending'],
     queryFn: rentalService.getPending,
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!getStorageItem('auth_token'),
   });
 };
 
@@ -177,7 +207,7 @@ export const useOngoingRentals = () => {
   return useQuery<ApiResponse<Rental[]>>({
     queryKey: ['rentals-ongoing'],
     queryFn: rentalService.getOngoing,
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!getStorageItem('auth_token'),
   });
 };
 
@@ -185,7 +215,7 @@ export const useCompletedRentals = () => {
   return useQuery<ApiResponse<Rental[]>>({
     queryKey: ['rentals-completed'],
     queryFn: rentalService.getCompleted,
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!getStorageItem('auth_token'),
   });
 };
 
@@ -243,7 +273,7 @@ export const useDashboardStats = () => {
   return useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: dashboardService.getStats,
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!getStorageItem('auth_token'),
   });
 };
 
@@ -251,7 +281,7 @@ export const useReportsSummary = () => {
   return useQuery({
     queryKey: ['reports-summary'],
     queryFn: dashboardService.getReportsSummary,
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!getStorageItem('auth_token'),
   });
 };
 
@@ -260,7 +290,7 @@ export const useUsers = (filters?: any) => {
   return useQuery<ApiResponse<User[]>>({
     queryKey: ['users', filters],
     queryFn: () => userService.getAll(filters),
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!getStorageItem('auth_token'),
   });
 };
 
@@ -268,7 +298,7 @@ export const useUser = (id: number) => {
   return useQuery<ApiResponse<User>>({
     queryKey: ['user', id],
     queryFn: () => userService.getById(id),
-    enabled: !!id && !!localStorage.getItem('auth_token'),
+    enabled: !!id && !!getStorageItem('auth_token'),
   });
 };
 

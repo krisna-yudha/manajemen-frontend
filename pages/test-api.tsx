@@ -126,17 +126,19 @@ export default function TestAPI() {
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Debug Information</h2>
             <div className="space-y-2 text-sm">
-              <p><strong>Frontend URL:</strong> {window.location.origin}</p>
+              <p><strong>Frontend URL:</strong> {typeof window !== 'undefined' ? window.location.origin : 'N/A'}</p>
               <p><strong>API URL:</strong> {process.env.NEXT_PUBLIC_API_URL}</p>
-              <p><strong>Current Token:</strong> {localStorage.getItem('auth_token') ? 'Present' : 'Not found'}</p>
-              <p><strong>Current User:</strong> {localStorage.getItem('user') ? 'Present' : 'Not found'}</p>
+              <p><strong>Current Token:</strong> {typeof window !== 'undefined' && localStorage.getItem('auth_token') ? 'Present' : 'Not found'}</p>
+              <p><strong>Current User:</strong> {typeof window !== 'undefined' && localStorage.getItem('user') ? 'Present' : 'Not found'}</p>
             </div>
             
             <div className="mt-4">
               <button
                 onClick={() => {
-                  localStorage.clear();
-                  alert('Storage cleared');
+                  if (typeof window !== 'undefined') {
+                    localStorage.clear();
+                    alert('Storage cleared');
+                  }
                 }}
                 className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
               >
