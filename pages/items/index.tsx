@@ -5,7 +5,7 @@ import Layout from '@/components/Layout';
 import { useAvailableBarangs, useBarangCategories } from '@/hooks/useApi';
 
 export default function Items() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -36,6 +36,11 @@ export default function Items() {
     return null;
   }
 
+  // Role permissions
+  const isGudang = user?.role === 'gudang';
+  const isMember = user?.role === 'member';
+  const isManager = user?.role === 'manager';
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -44,14 +49,28 @@ export default function Items() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                Barang Tersedia
+                {isGudang ? 'Kelola Barang' : 'Barang Tersedia'}
               </h1>
               <p className="mt-2 text-sm text-gray-600">
-                Jelajahi koleksi barang yang tersedia untuk disewa
+                {isGudang && 'Kelola inventori barang untuk rental'}
+                {isMember && 'Jelajahi koleksi barang yang tersedia untuk disewa'}
+                {isManager && 'Lihat daftar barang dalam sistem (hanya lihat)'}
               </p>
             </div>
             <div className="mt-4 sm:mt-0">
-              <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+              {isGudang && (
+                <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mr-3">
+                  <span className="mr-2">➕</span>
+                  Tambah Barang
+                </button>
+              )}
+              {isMember && (
+                <button className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors mr-3">
+                  <span className="mr-2">🛒</span>
+                  Ajukan Rental
+                </button>
+              )}
+              <div className="inline-flex bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
                 {barangsData?.data?.length || 0} Barang Tersedia
               </div>
             </div>
@@ -208,14 +227,35 @@ export default function Items() {
                     </div>
                   </div>
 
-                  {/* Action Button */}
-                  <button
-                    onClick={() => router.push(`/rentals/create?barang_id=${barang.id}`)}
-                    disabled={barang.status !== 'tersedia' || barang.stok === 0}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200"
-                  >
-                    {barang.status === 'tersedia' && barang.stok > 0 ? 'Sewa Sekarang' : 'Tidak Tersedia'}
-                  </button>
+                  {/* Action Buttons */}
+                  <div className="space-y-2">
+                    {isMember && (
+                      <button
+                        onClick={() => router.push(`/rentals/create?barang_id=${barang.id}`)}
+                        disabled={barang.status !== 'tersedia' || barang.stok === 0}
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200"
+                      >
+                        {barang.status === 'tersedia' && barang.stok > 0 ? 'Sewa Sekarang' : 'Tidak Tersedia'}
+                      </button>
+                    )}
+                    
+                    {isGudang && (
+                      <div className="flex space-x-2">
+                        <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200">
+                          Edit
+                        </button>
+                        <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200">
+                          Update Stok
+                        </button>
+                      </div>
+                    )}
+                    
+                    {isManager && (
+                      <div className="w-full bg-gray-100 text-gray-500 py-2 px-4 rounded-lg text-sm font-medium text-center">
+                        Hanya dapat melihat data
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )) || (

@@ -19,16 +19,39 @@ export default function Layout({ children }: LayoutProps) {
     logoutMutation.mutate();
   };
 
-  const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-    { name: 'Lihat Barang', href: '/items', icon: '📦' },
-    { name: 'My Rentals', href: '/rentals', icon: '📋' },
-    { name: 'Ajukan Rental', href: '/rentals/create', icon: '➕' },
-  ];
+  // Role-based navigation
+  const getNavigationByRole = () => {
+    if (!user?.role) return [];
+    
+    switch (user.role) {
+      case 'manager':
+        return [
+          { name: 'Dashboard', href: '/dashboard', icon: '📊' },
+          { name: 'Kelola Pengguna', href: '/users', icon: '👥' },
+          { name: 'Kelola Role', href: '/roles', icon: '🔐' },
+        ];
+      case 'gudang':
+        return [
+          { name: 'Dashboard', href: '/dashboard', icon: '📊' },
+          { name: 'Kelola Barang', href: '/items', icon: '📦' },
+          { name: 'Approve Rental', href: '/rentals/approvals', icon: '✅' },
+          { name: 'Semua Rental', href: '/rentals', icon: '📋' },
+        ];
+      case 'member':
+        return [
+          { name: 'Dashboard', href: '/dashboard', icon: '📊' },
+          { name: 'Lihat Barang', href: '/items', icon: '📦' },
+          { name: 'My Rentals', href: '/rentals', icon: '📋' },
+          { name: 'Ajukan Rental', href: '/rentals/create', icon: '➕' },
+        ];
+      default:
+        return [
+          { name: 'Dashboard', href: '/dashboard', icon: '📊' },
+        ];
+    }
+  };
 
-  const adminNavigation = [
-    { name: 'Admin Panel', href: '/admin', icon: '⚙️' },
-  ];
+  const navigation = getNavigationByRole();
 
   const getRoleColor = (role: string) => {
     switch (role) {
@@ -56,7 +79,7 @@ export default function Layout({ children }: LayoutProps) {
             {/* Logo and Brand */}
             <div className="flex items-center">
               <Link
-                href="/"
+                href="/dashboard"
                 className="flex items-center space-x-2 text-xl font-bold text-gray-900 hover:text-indigo-600 transition-colors duration-200"
               >
                 <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -95,27 +118,6 @@ export default function Layout({ children }: LayoutProps) {
                         <span>{item.name}</span>
                       </Link>
                     ))}
-                    
-                    {/* Admin Links */}
-                    {(user?.role === 'manager' || user?.role === 'gudang') && (
-                      <>
-                        <div className="w-px h-6 bg-gray-300 mx-2"></div>
-                        {adminNavigation.map((item) => (
-                          <Link
-                            key={item.name}
-                            href={item.href}
-                            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                              isCurrentPath(item.href)
-                                ? 'bg-purple-100 text-purple-700 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                            }`}
-                          >
-                            <span className="text-xs">{item.icon}</span>
-                            <span>{item.name}</span>
-                          </Link>
-                        ))}
-                      </>
-                    )}
                   </div>
 
                   {/* User Info */}
@@ -230,29 +232,6 @@ export default function Layout({ children }: LayoutProps) {
                   ))}
                   
                   {/* Admin Links */}
-                  {(user?.role === 'manager' || user?.role === 'gudang') && (
-                    <>
-                      <div className="py-2">
-                        <div className="border-t border-gray-200"></div>
-                      </div>
-                      {adminNavigation.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                            isCurrentPath(item.href)
-                              ? 'bg-purple-100 text-purple-700'
-                              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                          }`}
-                        >
-                          <span className="text-sm">{item.icon}</span>
-                          <span>{item.name}</span>
-                        </Link>
-                      ))}
-                    </>
-                  )}
-
                   <div className="pt-3 border-t border-gray-200">
                     <button
                       onClick={() => {

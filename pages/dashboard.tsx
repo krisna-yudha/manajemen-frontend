@@ -51,10 +51,12 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                Dashboard
+                Dashboard {user?.role?.charAt(0).toUpperCase()}{user?.role?.slice(1)}
               </h1>
               <p className="mt-2 text-sm text-gray-600">
-                Selamat datang kembali di sistem manajemen rental
+                {isManager && "Kelola pengguna dan role sistem"}
+                {isGudang && "Kelola barang dan approve rental"}
+                {isMember && "Lakukan rental barang yang tersedia"}
               </p>
             </div>
             <div className="mt-4 sm:mt-0">
@@ -66,7 +68,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                   <div>
-                    <h3 className="font-semibold">Selamat datang kembali!</h3>
+                    <h3 className="font-semibold">Selamat datang!</h3>
                     <p className="text-sm opacity-90">{user?.name}</p>
                     <p className="text-xs opacity-75 capitalize">{user?.role} • {user?.is_active ? 'Aktif' : 'Tidak Aktif'}</p>
                   </div>
@@ -76,123 +78,243 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Dashboard Stats untuk Manager */}
-        {isManager && dashboardData && dashboardData.status === 'success' && (
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.total_users || 0}</p>
-                </div>
-                <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+        {/* MANAGER DASHBOARD - Only User & Role Management */}
+        {isManager && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Kelola Pengguna</h3>
                   <span className="text-2xl">👥</span>
                 </div>
+                <p className="text-gray-600 mb-4">Kelola data pengguna role gudang dan member</p>
+                <Link href="/users" className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                  Kelola Pengguna
+                </Link>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Kelola Role</h3>
+                  <span className="text-2xl">🔐</span>
+                </div>
+                <p className="text-gray-600 mb-4">Atur role dan permission pengguna</p>
+                <Link href="/roles" className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                  Kelola Role
+                </Link>
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Rental Aktif</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.active_rentals || 0}</p>
+            {dashboardData && dashboardData.status === 'success' && (
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Total Users</p>
+                      <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.total_users || 0}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">👥</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">📋</span>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Role Gudang</p>
+                      <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.gudang_users || 0}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">📦</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Role Member</p>
+                      <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.member_users || 0}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">👤</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Active Users</p>
+                      <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.active_users || 0}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">✅</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+          </div>
+        )}
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Menunggu</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.pending_approvals || 0}</p>
-                </div>
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <span className="text-2xl">⏳</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Barang</p>
-                  <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.total_items || 0}</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+        {/* GUDANG DASHBOARD - Barang Management & Rental Approval */}
+        {isGudang && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Kelola Barang</h3>
                   <span className="text-2xl">📦</span>
                 </div>
+                <p className="text-gray-600 mb-4">Tambah, edit, dan hapus barang inventori</p>
+                <Link href="/items" className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                  Kelola Barang
+                </Link>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Approve Rental</h3>
+                  <span className="text-2xl">✅</span>
+                </div>
+                <p className="text-gray-600 mb-4">Review dan approve permintaan rental</p>
+                <Link href="/rentals/approvals" className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                  Approve Rental
+                </Link>
               </div>
             </div>
+
+            {dashboardData && dashboardData.status === 'success' && (
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Total Barang</p>
+                      <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.total_items || 0}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">📦</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Tersedia</p>
+                      <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.available_items || 0}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">✅</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Pending Approval</p>
+                      <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.pending_approvals || 0}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">⏳</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Rental Aktif</p>
+                      <p className="text-2xl font-bold text-gray-900">{dashboardData.data?.active_rentals || 0}</p>
+                    </div>
+                    <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                      <span className="text-2xl">📋</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        {/* Member Stats */}
-        {isMember && myRentalsData && myRentalsData.status === 'success' && (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Rental Aktif</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {myRentalsData.data?.filter(r => r.status === 'ongoing').length || 0}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <span className="text-xl">📋</span>
-                </div>
+        {/* MEMBER DASHBOARD - Only Rental */}
+        {isMember && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">Rental Barang</h3>
+                <span className="text-2xl">🛒</span>
               </div>
+              <p className="text-gray-600 mb-4">Ajukan rental barang yang tersedia</p>
+              <Link href="/rentals/create" className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                Ajukan Rental
+              </Link>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Menunggu</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {myRentalsData.data?.filter(r => r.status === 'pending').length || 0}
-                  </p>
+            {myRentalsData && myRentalsData.status === 'success' && (
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Rental Aktif</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {myRentalsData.data?.filter((r: any) => r.status === 'ongoing').length || 0}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <span className="text-xl">📋</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                  <span className="text-xl">⏳</span>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Menunggu</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {myRentalsData.data?.filter((r: any) => r.status === 'pending').length || 0}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <span className="text-xl">⏳</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Total Rental</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {myRentalsData.data?.length || 0}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <span className="text-xl">📊</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Tersedia</p>
+                      <p className="text-2xl font-bold text-gray-900">
+                        {barangsData?.data?.filter((b: any) => b.status === 'tersedia').length || 0}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <span className="text-xl">📦</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Rental</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {myRentalsData.data?.length || 0}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <span className="text-xl">📊</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Tersedia</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {barangsData?.data?.filter(b => b.status === 'tersedia').length || 0}
-                  </p>
-                </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <span className="text-xl">📦</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* My Rentals Section */}
-          <div className="xl:col-span-2">
+            {/* My Rentals Section untuk Member */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
@@ -218,7 +340,7 @@ export default function Dashboard() {
 
                 {myRentalsData && myRentalsData.status === 'success' && myRentalsData.data && myRentalsData.data.length > 0 ? (
                   <div className="space-y-4">
-                    {myRentalsData.data.slice(0, 5).map((rental) => (
+                    {myRentalsData.data.slice(0, 5).map((rental: any) => (
                       <div key={rental.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                           <div className="flex-1">
@@ -268,122 +390,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-
-          {/* Available Items Section */}
-          <div className="xl:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Barang Tersedia
-                  </h3>
-                  <Link
-                    href="/items"
-                    className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
-                  >
-                    Lihat Semua →
-                  </Link>
-                </div>
-              </div>
-              
-              <div className="p-6">
-                {barangsLoading && (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-                    <p className="mt-2 text-sm text-gray-500">Memuat barang...</p>
-                  </div>
-                )}
-
-                {barangsError && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-red-600">⚠️</span>
-                      <p className="text-sm text-red-600">
-                        Error memuat barang. Pastikan API Laravel berjalan di {process.env.NEXT_PUBLIC_API_URL}.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {barangsData && barangsData.status === 'success' && (
-                  <div className="space-y-4">
-                    {barangsData.data?.filter(b => b.status === 'tersedia').slice(0, 4).map((barang) => (
-                      <div key={barang.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 text-sm">{barang.nama_barang}</h4>
-                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{barang.deskripsi}</p>
-                            <div className="mt-2 flex items-center justify-between">
-                              <span className="text-xs text-gray-600">Stok: {barang.stok}</span>
-                              <span className="text-sm font-semibold text-green-600">
-                                Rp {barang.harga_sewa_per_hari?.toLocaleString('id-ID')}/hari
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )) || (
-                      <div className="text-center py-8">
-                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <span className="text-2xl">📦</span>
-                        </div>
-                        <p className="text-gray-500 text-sm">Tidak ada barang tersedia.</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Aksi Cepat</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <Link
-              href="/rentals/create"
-              className="flex flex-col items-center p-4 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg hover:from-indigo-100 hover:to-indigo-200 transition-all duration-200 group"
-            >
-              <div className="w-12 h-12 bg-indigo-600 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
-                <span className="text-white text-xl">➕</span>
-              </div>
-              <span className="text-sm font-medium text-indigo-900">Ajukan Rental</span>
-            </Link>
-
-            <Link
-              href="/items"
-              className="flex flex-col items-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg hover:from-green-100 hover:to-green-200 transition-all duration-200 group"
-            >
-              <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
-                <span className="text-white text-xl">🔍</span>
-              </div>
-              <span className="text-sm font-medium text-green-900">Lihat Barang</span>
-            </Link>
-
-            <Link
-              href="/rentals"
-              className="flex flex-col items-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg hover:from-purple-100 hover:to-purple-200 transition-all duration-200 group"
-            >
-              <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
-                <span className="text-white text-xl">📋</span>
-              </div>
-              <span className="text-sm font-medium text-purple-900">My Rentals</span>
-            </Link>
-
-            {(user?.role === 'manager' || user?.role === 'gudang') && (
-              <Link
-                href="/admin"
-                className="flex flex-col items-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg hover:from-orange-100 hover:to-orange-200 transition-all duration-200 group"
-              >
-                <div className="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
-                  <span className="text-white text-xl">⚙️</span>
-                </div>
-                <span className="text-sm font-medium text-orange-900">Admin Panel</span>
-              </Link>
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </Layout>
   );
